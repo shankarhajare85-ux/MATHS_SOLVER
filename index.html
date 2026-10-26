@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>11th Maths Solver</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;font-family:Arial,sans-serif;
+ background:#f2f5ff;color:#202b46
+}
+header{
+ background:linear-gradient(135deg,#4338ca,#7c3aed);
+ color:white;padding:25px 18px;border-radius:0 0 25px 25px
+}
+header h1{margin:0 0 10px;font-size:27px}
+header p{margin:0;line-height:1.5}
+.container{max-width:700px;margin:auto;padding:16px}
+.search{
+ width:100%;padding:14px;border:1px solid #ddd;
+ border-radius:12px;font-size:16px;margin-bottom:16px
+}
+.card{
+ background:white;padding:17px;margin:12px 0;
+ border-radius:16px;box-shadow:0 3px 12px #17255412
+}
+.card h3{margin:0 0 8px;color:#4338ca}
+select,button{
+ width:100%;padding:13px;border-radius:10px;
+ border:1px solid #d7dcef;font-size:15px;margin-top:8px
+}
+button{
+ background:#4f46e5;color:white;border:0;
+ font-weight:bold;cursor:pointer
+}
+button:active{opacity:.8}
+.question{
+ background:#f7f7ff;padding:14px;border-radius:10px;
+ margin-top:12px;line-height:1.6
+}
+.answer{
+ white-space:pre-line;line-height:1.8;
+ background:#ecfdf5;padding:14px;border-radius:10px;
+ margin-top:10px;overflow-wrap:anywhere
+}
+footer{text-align:center;color:#68738b;padding:25px;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+ <h1>📘 11th Maths Solver</h1>
+ <p>Maharashtra State Board • Science<br>
+ Step-by-step Mathematics Learning</p>
+</header>
+
+<main class="container">
+ <input id="search" class="search" placeholder="🔍 Search a question..." oninput="render()">
+
+ <div class="card">
+  <h3>📚 Select Part</h3>
+  <select id="part" onchange="render()">
+   <option value="1">Mathematics & Statistics Part 1</option>
+   <option value="2">Mathematics & Statistics Part 2</option>
+  </select>
+
+  <h3 style="margin-top:20px">📖 Select Chapter</h3>
+  <select id="chapter" onchange="render()">
+   <option value="1">Chapter 1 - Angle and its Measurement</option>
+   <option value="2">Chapter 2 - Trigonometry - I</option>
+   <option value="3">Chapter 3 - Trigonometry - II</option>
+   <option value="4">Chapter 4 - Determinants and Matrices</option>
+  </select>
+ </div>
+
+ <div class="card">
+  <h3>✏️ Equation Solver</h3>
+  <p>Enter a simple linear equation, for example: 2x+3=7</p>
+  <input id="equation" class="search" placeholder="Enter equation e.g. 2x+3=7">
+  <button onclick="solve()">Solve Equation</button>
+  <div id="result"></div>
+ </div>
+
+ <div class="card">
+  <h3>📝 Practice Questions</h3>
+  <div id="questions"></div>
+ </div>
+</main>
+
+<footer>
+ Made for Class 11 Students • Maths Solver
+</footer>
+
+<script>
+const data = [
+ {
+  part:"1", chapter:"1",
+  q:"Convert 180 degrees into radians.",
+  a:"Step 1: Use the formula: Radians = Degrees × π/180\nStep 2: = 180 × π/180\nAnswer: π radians."
+ },
+ {
+  part:"1", chapter:"1",
+  q:"Convert 90 degrees into radians.",
+  a:"Step 1: Radians = Degrees × π/180\nStep 2: = 90 × π/180\nAnswer: π/2 radians."
+ },
+ {
+  part:"1", chapter:"2",
+  q:"Write the identity sin²θ + cos²θ.",
+  a:"Using the fundamental trigonometric identity:\nsin²θ + cos²θ = 1\nAnswer: 1."
+ },
+ {
+  part:"1", chapter:"2",
+  q:"If sin θ = 1/2, give one angle between 0° and 90°.",
+  a:"We know sin 30° = 1/2.\nTherefore, θ = 30°."
+ },
+ {
+  part:"1", chapter:"3",
+  q:"Write the identity 1 + tan²θ.",
+  a:"Using the trigonometric identity:\n1 + tan²θ = sec²θ."
+ },
+ {
+  part:"1", chapter:"4",
+  q:"Find the determinant of [[a,b],[c,d]].",
+  a:"For a 2 × 2 matrix:\n|a b|\n|c d|\nDeterminant = ad − bc."
+ },
+ {
+  part:"2", chapter:"1",
+  q:"What is a mathematical statement?",
+  a:"A mathematical statement is a declarative sentence that is either true or false."
+ }
+];
+
+function render(){
+ const p=document.getElementById("part").value;
+ const c=document.getElementById("chapter").value;
+ const s=document.getElementById("search").value.toLowerCase();
+ const list=data.filter(x=>
+  x.part===p && x.chapter===c &&
+  x.q.toLowerCase().includes(s)
+ );
+ const el=document.getElementById("questions");
+ if(!list.length){
+  el.innerHTML="<p>No sample question found. Add your textbook questions to the data array.</p>";
+  return;
+ }
+ el.innerHTML=list.map(x=>`
+  <div class="question">
+   <b>Question:</b> ${x.q}
+   <button onclick="this.nextElementSibling.hidden=!this.nextElementSibling.hidden">
+    Show Solution
+   </button>
+   <div class="answer" hidden>${x.a}</div>
+  </div>`).join("");
+}
+
+function solve(){
+ const input=document.getElementById("equation").value.trim();
+ const out=document.getElementById("result");
+ // Supports equations of the form ax+b=c, e.g. 2x+3=7
+ const m=input.match(/^([+-]?\d*\.?\d*)\s*x\s*([+-]\s*\d*\.?\d*)?\s*=\s*([+-]?\d*\.?\d*)$/i);
+ if(!m){
+  out.innerHTML='<p style="color:#b91c1c">Supported format: 2x+3=7 or x-4=5</p>';
+  return;
+ }
+ let a=m[1];
+ if(a===""||a==="+")a="1";
+ if(a==="-")a="-1";
+ a=Number(a);
+ const bText=(m[2]||"").replace(/\s/g,"");
+ const b=bText===""?0:Number(bText);
+ const c=Number(m[3]);
+ if(!Number.isFinite(a)||!Number.isFinite(b)||!Number.isFinite(c)){
+  out.innerHTML="<p>Please enter valid numbers.</p>";return;
+ }
+ if(a===0){
+  out.innerHTML="<p>The coefficient of x cannot be zero.</p>";return;
+ }
+ const x=(c-b)/a;
+ out.innerHTML=`<div class="answer">Step 1: ${a}x ${b<0?"− "+Math.abs(b):"+ "+b} = ${c}
+\nStep 2: ${a}x = ${c-b}
+\nStep 3: x = (${c-b}) / ${a}
+\nAnswer: x = ${Number(x.toFixed(6))}</div>`;
+}
+render();
+</script>
+</body>
+</html>
